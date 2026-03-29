@@ -4,7 +4,7 @@
 
 ### Stack Choices
 
-- **ASP.NET Core MVC (.NET 9)** — chosen to satisfy the assessment requirement for MVC + Razor views while keeping the project in a single, cohesive solution
+- **ASP.NET Core MVC (.NET 10)** — chosen to satisfy the assessment requirement for MVC + Razor views while keeping the project in a single, cohesive solution
 - **PostgreSQL + Entity Framework Core** — relational database with EF Core as the ORM. PostgreSQL was chosen for its robustness, JSON support, and production-readiness
 - **Vanilla JS** — no frontend framework overhead. The assessment required demonstrating API integration so JavaScript fetch calls to our own WebAPI endpoints satisfy both the MVC and API integration requirements cleanly
 - **PayFast** — South Africa's leading payment gateway, integrated via their standard checkout flow with ITN webhook for payment confirmation
