@@ -108,25 +108,63 @@ RESTful endpoints following standard conventions:
 
 ---
 
-## 4. CI/CD & Deployment Considerations
+## 4. CI/CD & Deployment
 
-While not implemented for this assessment, the following would be applied in a production deployment:
+### Local Quality Gates — Husky
 
-### CI/CD Pipeline (GitHub Actions)
+Rather than a remote CI/CD pipeline, this project enforces quality checks locally using Husky git hooks before any code reaches the repository:
 
-To be added later
+- `pre-commit` — runs `dotnet build` and `dotnet test` on every commit. If either fails the commit is blocked entirely
+- `commit-msg` — enforces conventional commit message format (`feat`, `fix`, `docs`, `test`, `chore`) keeping the repository history clean and readable for reviewers
+- `pre-push` - ensures that the app builds successfully before push the commits to remote repo
+
+This guarantees no broken builds or failing tests can be pushed to the repository.
+
+### Deployment — Coolify
+
+The application is deployed to a self-hosted Coolify instance and accessible at [amrod.darhu.co.za](https://amrod.darhu.co.za). Coolify watches the GitHub repository and triggers a redeploy on every push to `main`.
+
+The deployment flow:
+```
+Push to GitHub (main)
+        v
+Coolify detects push via webhook
+        v
+Coolify builds the Dockerfile (multi-stage — SDK build + ASP.NET runtime)
+        v
+Container starts with environment variables injected by Coolify
+        v
+Program.cs runs MigrateAsync() on startup — database migrated automatically
+        v
+SeedData runs if Products table is empty
+        v
+Docker HEALTHCHECK polls /health endpoint every 30s
+        v
+Traefik reverse proxy routes public traffic to the container
+```
 
 ### Environment Configuration
 
-- `appsettings.json` contains non-sensitive defaults
-- `appsettings.Production.json` would override with real credentials
-- PayFast credentials, DB connection strings and passphrases would be stored in environment variables or a secrets manager (Azure Key Vault / AWS Secrets Manager) — never committed to source control
+All secrets are stored as environment variables in Coolify — nothing sensitive is committed to source control. ASP.NET Core reads them automatically via `WebApplication.CreateBuilder` which calls `AddEnvironmentVariables()` internally. Coolify injects them as OS-level environment variables using Docker's `-e` flag at container startup — the same mechanism as any platform (Railway, Heroku, AWS ECS).
 
-### Pre-production Checklist
+The double underscore maps nested JSON structure:
+```bash
+# Set in Coolify UI
+PayFast__MerchantId=your-merchant-id
+ConnectionStrings__DefaultConnection=Host=postgres-service;...
 
-- Remove `/api/payfast/debug` endpoint
-- Switch PayFast `BaseUrl` from sandbox to live (`https://www.payfast.co.za/eng/process`)
-- Set `notify_url` to the real public domain
-- Enable HTTPS enforcement
-- Add rate limiting to the API endpoints
-- Add IP whitelisting for PayFast ITN (PayFast publishes their IP ranges)
+# ASP.NET Core reads as
+{ "PayFast": { "MerchantId": "your-merchant-id" } }
+{ "ConnectionStrings": { "DefaultConnection": "Host=postgres-service;..." } }
+```
+
+No `appsettings.Production.json` file is needed or committed, `appsettings.json` provides the base structure and Coolify environment variables override the values at runtime.
+
+### Infrastructure
+
+| Component | Technology |
+|-----------|------------|
+| Server | VPS running Coolify |
+| Reverse proxy | Traefik (managed by Coolify) |
+| Database | PostgreSQL resource on same Coolify server |
+| Container port | 8082 |
