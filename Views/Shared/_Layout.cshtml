@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="@ViewData["Description"] ?? "Amrod - South Africa's leading promotional product supplier"" />
+    <title>@ViewData["Title"] - Amrod</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <a class="brand" href="/">
+                <span class="brand-amrod">amrod</span>
+            </a>
+            <nav class="nav">
+                <a href="/" class="nav-link">Products</a>
+                <a href="/cart" class="nav-link">
+                    Cart
+                    <span class="cart-count" id="cart-count">0</span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="site-main">
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; @DateTime.Now.Year Amrod (Pty) Ltd. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="~/js/cart.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

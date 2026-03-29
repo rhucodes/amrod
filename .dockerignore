@@ -1,0 +1,11 @@
+bin/
+obj/
+.git/
+.husky/
+*.md
+.vs/
+.vscode/
+.idea/
+postgres-data/
+docker-compose.yml
+Dockerfile

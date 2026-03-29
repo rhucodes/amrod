@@ -1,0 +1,87 @@
+﻿@{
+    ViewData["Title"]       = "Products";
+    ViewData["Description"] = "Browse Amrod's full range of promotional products, clothing, drinkware, tech and corporate gifts.";
+}
+
+<section class="catalog-hero">
+    <div class="container">
+        <h1>Promotional Products</h1>
+        <p>South Africa's leading supplier of branded corporate gifts and promotional wear.</p>
+    </div>
+</section>
+
+<section class="catalog">
+    <div class="container">
+
+        <!-- Filters -->
+        <div class="filters" id="filters">
+            <input
+                type="text"
+                id="search"
+                class="input"
+                placeholder="Search products..."
+                aria-label="Search products" />
+
+            <div class="filter-row">
+                <input
+                    type="number"
+                    id="min-price"
+                    class="input input-sm"
+                    placeholder="Min price (R)"
+                    aria-label="Minimum price"
+                    min="0" />
+                <span class="filter-sep">—</span>
+                <input
+                    type="number"
+                    id="max-price"
+                    class="input input-sm"
+                    placeholder="Max price (R)"
+                    aria-label="Maximum price"
+                    min="0" />
+
+                <label class="checkbox-label">
+                    <input type="checkbox" id="in-stock" aria-label="In stock only" />
+                    In stock only
+                </label>
+
+                <select id="sort-by" class="input input-sm" aria-label="Sort products">
+                    <option value="">Sort by</option>
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="price_desc">Price: High to Low</option>
+                    <option value="name_asc">Name: A to Z</option>
+                    <option value="name_desc">Name: Z to A</option>
+                </select>
+            </div>
+
+            <div class="filter-error" id="filter-error" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- Loading state -->
+        <div class="loading" id="loading" aria-live="polite">
+            <div class="spinner"></div>
+            <p>Loading products...</p>
+        </div>
+
+        <!-- Product grid -->
+        <div class="product-grid" id="product-grid" aria-label="Product catalog"></div>
+
+        <!-- Empty state -->
+        <div class="empty-state hidden" id="empty-state">
+            <p>No products found matching your search.</p>
+            <button class="btn btn-outline" onclick="clearFilters()">Clear filters</button>
+        </div>
+
+    </div>
+</section>
+
+<!-- Product detail modal -->
+<div class="modal-overlay hidden" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+        <button class="modal-close" id="modal-close" aria-label="Close product detail">&times;</button>
+        <div class="modal-body" id="modal-body"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/catalog.js" asp-append-version="true"></script>
+}
